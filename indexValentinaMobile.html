@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>💖 Para mi Valentina - Te Amo 💖</title>
+    <style>
+        :root {
+            --pink-primary: #ff1493;
+            --pink-secondary: #ff69b4;
+            --pink-light: #ffb6c1;
+            --pink-pale: #ffc0cb;
+            --purple-accent: #c471f5;
+            --bg-gradient-1: #ff9a9e;
+            --bg-gradient-2: #fecfef;
+            --text-dark: #d63384;
+            --text-light: #8b5a83;
+            --white-soft: rgba(255, 255, 255, 0.95);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            /* Dimensiones de móvil estándar */
+            --mobile-width: 375px;
+            --mobile-height: 812px; /* iPhone X/11/12/13 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+        }
+
+        /* Contenedor principal con dimensiones fijas de móvil */
+        .mobile-viewport {
+            width: var(--mobile-width);
+            height: var(--mobile-height);
+            max-width: 100vw;
+            max-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--purple-accent));
+            background-size: 300% 300%;
+            animation: bgMove 15s ease infinite;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes bgMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Game container dentro del viewport */
+        .game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header del juego */
+        .game-header {
+            position: absolute;
+            top: env(safe-area-inset-top, 20px);
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-badge {
+            background: var(--white-soft);
+            backdrop-filter: blur(10px);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 18px;
+            box-shadow: 0 3px 15px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .valentina-name {
+            background: linear-gradient(45deg, var(--pink-primary), var(--purple-accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 20px;
+            filter: drop-shadow(2px 2px 4px rgba(255, 255, 255, 0.3));
+        }
+
+        /* Canvas del juego */
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: linear-gradient(180deg, #ffe6f2 0%, #fff0f7 100%);
+        }
+
+        /* Zona de mensajes de amor - En la parte inferior */
+        .messages-zone {
+            position: absolute;
+            bottom: 80px;
+            left: 10px;
+            right: 10px;
+            height: 120px;
+            pointer-events: none;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mensajes de amor mejorados */
+        .love-message-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 16px 24px;
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.35),
+                        0 0 0 2px rgba(255, 182, 193, 0.5);
+            max-width: calc(100% - 40px);
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            animation: messageSlideIn 0.5s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        @keyframes messageSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .love-message-card.fade-out {
+            animation: messageFadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes messageFadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+        }
+
+        .love-message-emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+            animation: emojiPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes emojiPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .love-message-text {
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Overlay screens */
+        .overlay-screen {
+            position: absolute;
+            inset: 0;
+            background: var(--white-soft);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .overlay-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .title-valentine {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--pink-primary);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.2);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .emoji-giant {
+            font-size: 90px;
+            margin: 20px 0;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, var(--pink-secondary), var(--pink-primary));
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 35px;
+            box-shadow: 0 6px 25px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        .btn-play:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 15px rgba(255, 20, 147, 0.4);
+        }
+
+        /* Instrucciones de toque */
+        .touch-instruction {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: 600;
+            animation: pulseInstruction 2s ease-in-out infinite;
+            z-index: 15;
+            pointer-events: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes pulseInstruction {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* Partículas de fondo */
+        .hearts-background {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.12;
+            animation: floatHeart 15s linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100%) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.12;
+            }
+            90% {
+                opacity: 0.12;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Estadísticas */
+        .stats-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            min-width: 90px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--pink-primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Indicadores del juego */
+        .combo-indicator {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--pink-primary);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .combo-indicator.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .powerup-active {
+            position: absolute;
+            top: 90px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .powerup-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            animation: powerupPulse 1s ease-in-out infinite;
+        }
+
+
+
+
+
+        @keyframes powerupPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); }
+            50% { transform: scale(1.1); box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4); }
+        }
+
+        @keyframes shieldActivated {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes screenClearEffect {
+            0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+            25% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+            75% { transform: translateX(-50%) scale(0.95); opacity: 1; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes pointsEarnedEffect {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Loading screen */
+        .loading-screen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-heart {
+            font-size: 90px;
+            animation: heartBeat 1s ease-in-out infinite;
+            margin-bottom: 25px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Media queries para pantallas muy pequeñas */
+        @media (max-height: 667px) {
+            .game-header {
+                padding: 10px 15px;
+            }
+
+            .score-badge {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
+
+            .valentina-name {
+                font-size: 18px;
+            }
+
+            .messages-zone {
+                bottom: 60px;
+                height: 100px;
+            }
+
+            .love-message-card {
+                padding: 12px 20px;
+            }
+
+            .love-message-emoji {
+                font-size: 28px;
+                margin-bottom: 6px;
+            }
+
+            .love-message-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Viewport móvil -->
+    <div class="mobile-viewport">
+        <!-- Pantalla de carga -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-heart">💖</div>
+            <div class="loading-text">Preparando todo para Valentina...</div>
+        </div>
+
+        <!-- Corazones de fondo -->
+        <div class="hearts-background" id="heartsBackground"></div>
+
+        <!-- Contenedor del juego -->
+        <div class="game-container">
+            <!-- Header del juego -->
+            <div class="game-header">
+                <div class="score-badge">
+                    <span>💖</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="valentina-name">Valentina</div>
+            </div>
+
+            <!-- Indicadores adicionales -->
+            <div class="combo-indicator" id="comboIndicator">
+                🔥 x<span id="comboValue">0</span>
+            </div>
+
+            <div class="powerup-active" id="powerupActive"></div>
+
+
+
+            <!-- Canvas wrapper -->
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas"></canvas>
+
+                <!-- Zona de mensajes -->
+                <div class="messages-zone" id="messagesZone"></div>
+
+                <!-- Instrucción de toque -->
+                <div class="touch-instruction" id="touchInstruction" style="display: none;">
+                    Toca la pantalla para volar 💕
+                </div>
+            </div>
+
+            <!-- Pantalla de inicio -->
+            <div class="overlay-screen active" id="startScreen">
+                <div class="emoji-giant">💕</div>
+                <h1 class="title-valentine">¡Hola mi Valentina!</h1>
+                <p class="subtitle">
+                    Este juego lo hice especialmente para ti.<br>
+                    Cada obstáculo que pases te mostrará<br>
+                    cuánto te amo 💖<br><br>
+                    <span style="font-size: 14px; color: var(--pink-secondary);">
+                        💡 Recoge los power-ups 🛡️⏱️ para ayudarte<br>
+                        ⭐ Aparecen después del 6to tubo y son más escasos<br>
+                        🛡️ El escudo ÉPICO limpia TODA la pantalla de tubos<br>
+                        ⚡ Se consume al tocar un tubo y despeja tu camino<br>
+                        🎯 Ganas puntos por cada tubo destruido
+                    </span>
+                </p>
+                <button class="btn-play" id="startBtn">Comenzar</button>
+            </div>
+
+            <!-- Pantalla de pausa -->
+            <div class="overlay-screen" id="pauseScreen">
+                <div class="emoji-giant">⏸️</div>
+                <h2 class="title-valentine">Juego Pausado</h2>
+                <p class="subtitle">Toca para continuar volando, mi amor</p>
+                <button class="btn-play" id="resumeBtn">Continuar</button>
+            </div>
+
+            <!-- Pantalla de game over -->
+            <div class="overlay-screen" id="gameOverScreen">
+                <div class="emoji-giant" id="gameOverEmoji">💔</div>
+                <h2 class="title-valentine">¡No te rindas, Valentina!</h2>
+                <p class="subtitle" id="finalMessage">Tu amor me da fuerzas para intentarlo de nuevo</p>
+
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stat-value" id="finalScore">0</div>
+                        <div class="stat-label">Puntos</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stat-value" id="bestScore">0</div>
+                        <div class="stat-label">Récord</div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stat-value" id="messagesRead">0</div>
+                        <div class="stat-label">Mensajes</div>
+                    </div>
+                </div>
+
+                <button class="btn-play" id="restartBtn">Volar de Nuevo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURACIÓN DEL JUEGO =====
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Variables del juego (ajustadas para ser más fácil)
+        const GAME_CONFIG = {
+            gravity: 0.30,          // Más fácil aún
+            jumpPower: -7.5,        // Saltos más suaves
+            gameSpeed: 2,           // Velocidad constante
+            pipeWidth: 70,
+            pipeGap: 210,           // Más espacio entre tubos
+            minPipeHeight: 60,
+            heartSize: 35,
+            powerupChance: 0.4,     // Menor probabilidad de power-ups
+            messageCooldown: 3,
+            collectibleHeartChance: 0.6,  // Corazones coleccionables
+            specialEventChance: 0.15,      // Eventos especiales
+            powerupSpawnInterval: 8000     // Crear power-up cada 8 segundos (más espaciado)
+        };
+
+        // Mensajes de amor para Valentina
+        const loveMessages = [
+            { emoji: "💕", text: "Hola mi amor, eres una gran inspiración para mi" },
+            { emoji: "💖", text: "Cada día te amo más, mi niña linda" },
+            { emoji: "💗", text: "Tu sonrisa ilumina la ciudad..." },
+            { emoji: "💓", text: "Eres el amor de mis vidas" },
+            { emoji: "💞", text: "Contigo quiero pasar toda mi eternidad" },
+            { emoji: "💘", text: "Mi corazón late, y el motivo es tu sonrisa" },
+            { emoji: "💝", text: "Eres mi tesoro más preciado" },
+            { emoji: "💟", text: "Valentina, eres perfecta para mí" },
+            { emoji: "❤️", text: "Te amo con todo mi corazón" },
+            { emoji: "💑", text: "Juntos por siempre, mi amor" },
+            { emoji: "🌹", text: "Eres más hermosa que cualquier flor" },
+            { emoji: "⭐", text: "Eres la estrella que ilumina mi vida" },
+            { emoji: "🌟", text: "Brillas más que el sol, Valentina" },
+            { emoji: "✨", text: "Haces que todo sea mágico" },
+            { emoji: "🎀", text: "Eres el mejor regalo de mi vida" },
+            { emoji: "👑", text: "Mi reina, mi princesa, mi todo" },
+            { emoji: "🦋", text: "Me das mariposas en el estómago" },
+            { emoji: "🌈", text: "Traes color a mi vida" },
+            { emoji: "☀️", text: "Eres mi sol en días nublados" },
+            { emoji: "🌙", text: "Sueño contigo cada noche" }
+        ];
+
+        // Estado del juego
+        let gameState = {
+            current: 'loading',
+            score: 0,
+            bestScore: parseInt(localStorage.getItem('valentinaGameBest') || 0),
+            combo: 0,
+            messagesShown: 0,
+            pipesPassedSinceMessage: 0,
+            totalMessages: parseInt(localStorage.getItem('valentinaTotalMessages') || 0),
+            heartsCollected: 0,
+            totalHeartsCollected: parseInt(localStorage.getItem('valentinaTotalHearts') || 0),
+            kissesSent: 0,
+            specialEventActive: null,
+            soundEnabled: true,
+            achievements: JSON.parse(localStorage.getItem('valentinaAchievements') || '{}')
+        };
+
+        // Jugador
+        const heart = {
+            x: 100,
+            y: 250,
+            velocity: 0,
+            rotation: 0,
+            powerups: {
+                shield: false,
+                slowmo: false
+            }
+        };
+
+        // Arrays del juego
+        let pipes = [];
+        let particles = [];
+        let clouds = [];
+        let activeMessage = null;
+
+        // ===== FUNCIONES DE CONFIGURACIÓN =====
+
+        // Ajustar canvas
+        function resizeCanvas() {
+            const wrapper = document.querySelector('.canvas-wrapper');
+            const rect = wrapper.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            if (gameState.current !== 'playing') {
+                heart.x = canvas.width * 0.25;
+                heart.y = canvas.height / 2;
+            }
+        }
+
+        // Crear corazones de fondo
+        function createBackgroundHearts() {
+            const container = document.getElementById('heartsBackground');
+            container.innerHTML = '';
+            const heartEmojis = ['💕', '💖', '💗', '💓', '💞'];
+
+            for (let i = 0; i < 12; i++) {
+                const heartEl = document.createElement('div');
+                heartEl.className = 'floating-heart';
+                heartEl.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heartEl.style.left = Math.random() * 100 + '%';
+                heartEl.style.animationDelay = Math.random() * 15 + 's';
+                heartEl.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(heartEl);
+            }
+        }
+
+        // ===== FUNCIONES DE MENSAJES DE AMOR =====
+
+        // Mostrar mensaje de amor en la zona inferior
+        function showLoveMessage() {
+            // Si ya hay un mensaje activo, no mostrar otro
+            if (activeMessage) return;
+
+            const message = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+            const card = document.createElement('div');
+            card.className = 'love-message-card';
+
+            card.innerHTML = `
+                <div class="love-message-emoji">${message.emoji}</div>
+                <p class="love-message-text">${message.text}</p>
+            `;
+
+            const messagesZone = document.getElementById('messagesZone');
+            messagesZone.appendChild(card);
+            activeMessage = card;
+
+            gameState.messagesShown++;
+            gameState.totalMessages++;
+            localStorage.setItem('valentinaTotalMessages', gameState.totalMessages);
+
+            // Remover después de 4 segundos
+            setTimeout(() => {
+                card.classList.add('fade-out');
+                setTimeout(() => {
+                    if (card.parentNode) {
+                        card.remove();
+                    }
+                    if (activeMessage === card) {
+                        activeMessage = null;
+                    }
+                }, 500);
+            }, 4000);
+        }
+
+        // ===== INICIALIZACIÓN =====
+
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            createBackgroundHearts();
+            setupEventListeners();
+
+            // Inicializar contador de power-ups
+            gameState.powerupsCollected = 0;
+
+            // Ocultar pantalla de carga
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    gameState.current = 'menu';
+                }, 500);
+            }, 1500);
+
+            gameLoop();
+        }
+
+        // ===== EVENT LISTENERS =====
+
+        function setupEventListeners() {
+            // Botones
+            document.getElementById('startBtn').addEventListener('click', startGame);
+            document.getElementById('resumeBtn').addEventListener('click', resumeGame);
+            document.getElementById('restartBtn').addEventListener('click', restartGame);
+
+            // Controles táctiles y mouse en todo el canvas
+            const canvasWrapper = document.querySelector('.canvas-wrapper');
+            canvasWrapper.addEventListener('touchstart', handleTouch, { passive: false });
+            canvasWrapper.addEventListener('mousedown', handleTouch);
+            canvasWrapper.addEventListener('click', handleTouch);
+
+            // Controles de teclado
+            document.addEventListener('keydown', handleKeyPress);
+
+            // Prevenir comportamientos por defecto
+            document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+
+            // Prevenir scroll con espacio
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && e.target === document.body) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            if (gameState.current === 'playing') {
+                jump();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.code === 'Space' || e.key === ' ') {
+                e.preventDefault();
+
+                if (gameState.current === 'menu') {
+                    startGame();
+                } else if (gameState.current === 'playing') {
+                    jump();
+                } else if (gameState.current === 'gameOver') {
+                    restartGame();
+                } else if (gameState.current === 'paused') {
+                    resumeGame();
+                }
+            } else if (e.code === 'Escape' && gameState.current === 'playing') {
+                pauseGame();
+            }
+        }
+
+        // ===== FUNCIONES DEL JUEGO =====
+
+                        function startGame() {
+            resetGame();
+            gameState.current = 'playing';
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('touchInstruction').style.display = 'block';
+
+            // Ocultar instrucción después de 3 segundos
+            setTimeout(() => {
+                document.getElementById('touchInstruction').style.display = 'none';
+            }, 3000);
+
+            // El sistema de power-ups se inicia automáticamente en resetGame()
+        }
+
+        function pauseGame() {
+            if (gameState.current === 'playing') {
+                gameState.current = 'paused';
+                document.getElementById('pauseScreen').classList.add('active');
+            }
+        }
+
+        function resumeGame() {
+            gameState.current = 'playing';
+            document.getElementById('pauseScreen').classList.remove('active');
+        }
+
+        function restartGame() {
+            resetGame();
+            gameState.current = 'playing';
+            document.getElementById('gameOverScreen').classList.remove('active');
+        }
+
+        function resetGame() {
+            resizeCanvas();
+
+            // Limpiar timers de power-ups activos
+            if (heart.shieldTimer) {
+                clearTimeout(heart.shieldTimer);
+                heart.shieldTimer = null;
+            }
+            if (heart.slowmoTimer) {
+                clearTimeout(heart.slowmoTimer);
+                heart.slowmoTimer = null;
+            }
+
+            heart.x = canvas.width * 0.25;
+            heart.y = canvas.height / 2;
+            heart.velocity = 0;
+            heart.rotation = 0;
+            heart.powerups = { shield: false, slowmo: false };
+
+            gameState.score = 0;
+            gameState.combo = 0;
+            gameState.messagesShown = 0;
+            gameState.pipesPassedSinceMessage = 0;
+            gameState.powerupsCollected = 0;
+
+            pipes = [];
+            particles = [];
+            clouds = [];
+
+            // Limpiar mensajes
+            if (activeMessage) {
+                activeMessage.remove();
+                activeMessage = null;
+            }
+
+            // Crear elementos iniciales
+            createPipe(canvas.width);
+            createPipe(canvas.width + 350);
+
+            for (let i = 0; i < 3; i++) {
+                createCloud();
+            }
+
+            updateUI();
+
+            // Reiniciar el sistema de power-ups
+            restartPowerupSystem();
+        }
+
+        function jump() {
+            heart.velocity = GAME_CONFIG.jumpPower;
+            createJumpParticles();
+        }
+
+        function gameOver() {
+            gameState.current = 'gameOver';
+
+            if (gameState.score > gameState.bestScore) {
+                gameState.bestScore = gameState.score;
+                localStorage.setItem('valentinaGameBest', gameState.bestScore);
+            }
+
+            // Actualizar pantalla de game over
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('bestScore').textContent = gameState.bestScore;
+            document.getElementById('messagesRead').textContent = gameState.messagesShown;
+
+            // Mensaje personalizado
+            let message = "";
+            if (gameState.score >= 50) {
+                message = "¡Increíble Valentina! Tu amor me da alas 💖";
+                document.getElementById('gameOverEmoji').textContent = '🏆';
+            } else if (gameState.score >= 20) {
+                message = "¡Muy bien mi amor! Cada vez vuelas más alto 💕";
+                document.getElementById('gameOverEmoji').textContent = '💖';
+            } else if (gameState.score >= 10) {
+                message = "¡Buen intento princesa! Tu amor me inspira 💗";
+                document.getElementById('gameOverEmoji').textContent = '💕';
+            } else {
+                message = "No importa el puntaje, te amo infinitamente 💝";
+                document.getElementById('gameOverEmoji').textContent = '💞';
+            }
+
+            document.getElementById('finalMessage').textContent = message;
+            document.getElementById('gameOverScreen').classList.add('active');
+
+            createExplosion(heart.x, heart.y);
+        }
+
+        // ===== UPDATE =====
+
+        function update() {
+            if (gameState.current !== 'playing') return;
+
+            // Física del corazón
+            heart.velocity += GAME_CONFIG.gravity;
+            heart.y += heart.velocity;
+            heart.rotation = Math.min(Math.max(heart.velocity * 0.05, -0.5), 0.5);
+
+            // Verificar colisiones
+            if (checkCollisions()) {
+                gameOver();
+                return;
+            }
+
+            // Actualizar elementos
+            updatePipes();
+            updateParticles();
+            updateClouds();
+
+            // Crear partículas de estela
+            if (Math.random() < 0.3) {
+                createTrailParticle();
+            }
+
+
+        }
+
+        function updatePipes() {
+            const speed = GAME_CONFIG.gameSpeed * (heart.powerups.slowmo ? 0.5 : 1);
+
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                const pipe = pipes[i];
+                pipe.x -= speed;
+
+                if (!pipe.passed && pipe.x + GAME_CONFIG.pipeWidth < heart.x) {
+                    pipe.passed = true;
+                    scorePipe();
+                }
+
+                if (pipe.x + GAME_CONFIG.pipeWidth < -50) {
+                    pipes.splice(i, 1);
+                }
+            }
+
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 320) {
+                createPipe(canvas.width);
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+
+                // Los power-ups se mueven hacia la izquierda con la velocidad del juego
+                if (p.type === 'powerup') {
+                    if (p.appearing) {
+                        // Durante la aparición, aumentar gradualmente
+                        p.scale = Math.min(p.scale + 0.02, 1);
+                        p.opacity = Math.min(p.opacity + 0.02, 1);
+                    } else {
+                        // Después de aparecer, hacer que brillen
+                        p.scale = 1 + Math.sin(Date.now() * 0.005) * 0.1;
+                    }
+
+                    // Los power-ups se mueven hacia la izquierda con la velocidad del juego
+                    p.x -= GAME_CONFIG.gameSpeed;
+
+                    // Si se salen de la pantalla, eliminarlos
+                    if (p.x + 30 < 0) {
+                        particles.splice(i, 1);
+                    }
+                } else {
+                    // Partículas normales
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.2;
+                    p.life -= 0.02;
+                    p.rotation += p.rotationSpeed || 0;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        function updateClouds() {
+            const speed = 0.5 * (heart.powerups.slowmo ? 0.5 : 1);
+
+            for (let i = clouds.length - 1; i >= 0; i--) {
+                const cloud = clouds[i];
+                cloud.x -= speed * cloud.speed;
+
+                if (cloud.x + cloud.width < -50) {
+                    clouds.splice(i, 1);
+                    createCloud();
+                }
+            }
+        }
+
+        // ===== CREACIÓN DE ELEMENTOS =====
+
+                function createPipe(x) {
+            const minHeight = GAME_CONFIG.minPipeHeight;
+            const maxHeight = canvas.height - GAME_CONFIG.pipeGap - minHeight - 120;
+            const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+
+            pipes.push({
+                x: x,
+                topHeight: topHeight,
+                bottomY: topHeight + GAME_CONFIG.pipeGap,
+                passed: false,
+                hasPowerup: false // No crear power-ups automáticamente con los tubos
+            });
+        }
+
+        function createCloud() {
+            clouds.push({
+                x: canvas.width + Math.random() * 200,
+                y: Math.random() * (canvas.height * 0.3),
+                width: 60 + Math.random() * 40,
+                height: 30 + Math.random() * 20,
+                speed: 0.3 + Math.random() * 0.2,
+                opacity: 0.2 + Math.random() * 0.1
+            });
+        }
+
+        function createJumpParticles() {
+            const emojis = ['💕', '✨', '💫'];
+            for (let i = 0; i < 5; i++) {
+                particles.push({
+                    x: heart.x,
+                    y: heart.y + GAME_CONFIG.heartSize / 2,
+                    vx: -Math.random() * 3 - 1,
+                    vy: Math.random() * 2 - 1,
+                    size: 15 + Math.random() * 10,
+                    emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                    life: 1,
+                    rotationSpeed: (Math.random() - 0.5) * 0.2
+                });
+            }
+        }
+
+        function createTrailParticle() {
+            particles.push({
+                x: heart.x - 10,
+                y: heart.y,
+                vx: -2,
+                vy: (Math.random() - 0.5) * 2,
+                size: 10,
+                emoji: '✨',
+                life: 0.5
+            });
+        }
+
+        function createExplosion(x, y) {
+            const emojis = ['💔', '💕', '💖', '💗', '✨'];
+            for (let i = 0; i < 30; i++) {
+                const angle = (Math.PI * 2 * i) / 30;
+                const speed = 3 + Math.random() * 5;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 20 + Math.random() * 20,
+                    emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                    life: 1,
+                    rotationSpeed: (Math.random() - 0.5) * 0.3
+                });
+            }
+        }
+
+        function createShieldExplosion(x, y) {
+            // Explosión épica del escudo que limpia la pantalla
+            const shieldEmojis = ['🛡️', '⚡', '💥', '✨', '🌟'];
+            for (let i = 0; i < 50; i++) {
+                const angle = (Math.PI * 2 * i) / 50;
+                const speed = 4 + Math.random() * 6;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 25 + Math.random() * 25,
+                    emoji: shieldEmojis[Math.floor(Math.random() * shieldEmojis.length)],
+                    life: 1.5,
+                    rotationSpeed: (Math.random() - 0.5) * 0.4,
+                    powerupColor: '#40E0D0'
+                });
+            }
+        }
+
+        // ===== COLISIONES =====
+
+                function checkCollisions() {
+            // Colisión con bordes de la pantalla - Solo si realmente tocas el borde
+            if (heart.y < -5 || heart.y + GAME_CONFIG.heartSize > canvas.height + 5) {
+                if (heart.powerups.shield) {
+                    // El escudo protege de colisiones con bordes
+                    console.log('🛡️ Escudo activado: Protegiendo de colisión con borde');
+                    heart.powerups.shield = false;
+
+                    // Cancelar el timer del escudo ya que se consumió
+                    if (heart.shieldTimer) {
+                        clearTimeout(heart.shieldTimer);
+                        heart.shieldTimer = null;
+                        console.log('🛡️ Timer del escudo cancelado - Se consumió en colisión');
+                    }
+
+                    updatePowerupUI();
+                    createExplosion(heart.x, heart.y);
+                    console.log('🛡️ ¡Escudo consumido! Ya no tienes protección');
+                    return false; // No hay colisión mortal
+                }
+                console.log('💔 Colisión mortal con borde - Sin escudo');
+                return true; // Colisión mortal
+            }
+
+            // Colisión con tubos - Sistema CORREGIDO con escudo que protege el corazón
+            for (const pipe of pipes) {
+                // Verificar si el corazón está en el rango horizontal del tubo
+                const heartLeft = heart.x;
+                const heartRight = heart.x + GAME_CONFIG.heartSize;
+                const pipeLeft = pipe.x;
+                const pipeRight = pipe.x + GAME_CONFIG.pipeWidth;
+
+                                // Solo verificar colisión si hay superposición horizontal real
+                if (heartRight > pipeLeft && heartLeft < pipeRight) {
+                    // Verificar colisión vertical - CORREGIDO: solo si tocas el tubo
+                    const heartTop = heart.y;
+                    const heartBottom = heart.y + GAME_CONFIG.heartSize;
+                    const pipeTop = pipe.topHeight;
+                    const pipeBottom = pipe.bottomY;
+
+                    // CORRECCIÓN: Colisión solo si el corazón está FUERA del espacio libre
+                    // El corazón debe estar DENTRO del espacio libre para pasar
+                    if (heartTop < pipeTop || heartBottom > pipeBottom) {
+                        if (heart.powerups.shield) {
+                            // ¡ESCUDO ÉPICO! Limpia la pantalla de tubos
+                            console.log('🛡️ ¡ESCUDO ÉPICO ACTIVADO! Limpiando pantalla de tubos');
+
+                            // Limpiar TODOS los tubos de la pantalla
+                            clearAllPipes();
+
+                            // Consumir el escudo
+                            heart.powerups.shield = false;
+
+                            // Cancelar el timer del escudo ya que se consumió
+                            if (heart.shieldTimer) {
+                                clearTimeout(heart.shieldTimer);
+                                heart.shieldTimer = null;
+                            }
+
+                            updatePowerupUI();
+                            createShieldExplosion(heart.x, heart.y);
+                            return false; // No hay colisión mortal
+                        }
+                        return true; // Colisión mortal
+                    }
+                }
+            }
+
+            // Colisión con power-ups
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                if (p.type === 'powerup') {
+                    const dx = heart.x + GAME_CONFIG.heartSize / 2 - p.x;
+                    const dy = heart.y + GAME_CONFIG.heartSize / 2 - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 30) {
+                        collectPowerup(p.powerupType);
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+
+            return false; // No hay colisiones
+        }
+
+        // ===== PUNTUACIÓN Y POWER-UPS =====
+
+        function scorePipe() {
+            gameState.score++;
+            gameState.combo++;
+            gameState.pipesPassedSinceMessage++;
+
+            updateUI();
+
+            // Mostrar mensaje de amor
+            if (gameState.pipesPassedSinceMessage >= GAME_CONFIG.messageCooldown) {
+                showLoveMessage();
+                gameState.pipesPassedSinceMessage = 0;
+            }
+
+            // Efectos visuales por combo
+            if (gameState.combo > 0 && gameState.combo % 5 === 0) {
+                createExplosion(heart.x, heart.y);
+            }
+        }
+
+        function collectPowerup(type) {
+            heart.powerups[type] = true;
+
+            // Efecto visual especial para power-ups
+            createPowerupEffect(heart.x, heart.y, type);
+
+            // Actualizar contador
+            gameState.powerupsCollected = (gameState.powerupsCollected || 0) + 1;
+
+            // Mostrar mensaje de confirmación
+            if (type === 'shield') {
+                console.log('🛡️ Escudo activado por 5 segundos');
+                showShieldMessage();
+            } else if (type === 'slowmo') {
+                console.log('⏱️ Cámara lenta activada por 8 segundos');
+            }
+
+            // Guardar referencia al timer para poder cancelarlo si se consume antes
+            if (type === 'shield') {
+                heart.shieldTimer = setTimeout(() => {
+                    if (heart.powerups.shield) { // Solo si aún está activo
+                        heart.powerups.shield = false;
+                        updatePowerupUI();
+                        console.log('🛡️ Escudo desactivado por tiempo');
+                    }
+                }, 5000);
+            } else if (type === 'slowmo') {
+                heart.slowmoTimer = setTimeout(() => {
+                    heart.powerups.slowmo = false;
+                    updatePowerupUI();
+                    console.log('⏱️ Cámara lenta desactivada');
+                }, 8000);
+            }
+
+            updatePowerupUI();
+            createExplosion(heart.x, heart.y);
+        }
+
+                function createPowerupEffect(x, y, type) {
+            const emoji = type === 'shield' ? '🛡️' : '⏱️';
+            const color = type === 'shield' ? '#40E0D0' : '#FFD700';
+
+            // Crear partículas especiales del power-up
+            for (let i = 0; i < 15; i++) {
+                const angle = (Math.PI * 2 * i) / 15;
+                const speed = 2 + Math.random() * 3;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 15 + Math.random() * 10,
+                    emoji: emoji,
+                    life: 1,
+                    decay: 0.03,
+                    powerupColor: color
+                });
+            }
+        }
+
+                                        function createRandomPowerup() {
+            if (gameState.current !== 'playing') return;
+
+            // Verificar si ya hay power-ups en pantalla (máximo 1 a la vez)
+            const powerupsOnScreen = particles.filter(p => p.type === 'powerup').length;
+            if (powerupsOnScreen >= 1) {
+                // Si ya hay un power-up, programar el siguiente más tarde
+                setTimeout(createRandomPowerup, GAME_CONFIG.powerupSpawnInterval);
+                return;
+            }
+
+            // Solo crear power-up si pasa la verificación de probabilidad
+            if (Math.random() > GAME_CONFIG.powerupChance) {
+                // Programar el siguiente intento
+                setTimeout(createRandomPowerup, GAME_CONFIG.powerupSpawnInterval / 2);
+                return;
+            }
+
+            const powerupTypes = ['shield', 'slowmo'];
+            const type = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+            const emoji = type === 'shield' ? '🛡️' : '⏱️';
+
+            // Posición estratégica: aparecer en el lado derecho y moverse hacia la izquierda
+            const x = canvas.width + 30; // Aparecer justo fuera del borde derecho
+
+            // Crear power-ups en diferentes alturas para que sean alcanzables
+            const heightZones = [
+                { min: 80, max: 200 },    // Zona alta
+                { min: 250, max: 400 },   // Zona media
+                { min: 450, max: 600 }    // Zona baja
+            ];
+            const zone = heightZones[Math.floor(Math.random() * heightZones.length)];
+            const y = zone.min + Math.random() * (zone.max - zone.min);
+
+            const powerup = {
+                x: x,
+                y: y,
+                type: 'powerup',
+                powerupType: type,
+                emoji: emoji,
+                size: 35, // Más grande para mejor visibilidad
+                life: 1,
+                vx: 0,
+                vy: 0,
+                scale: 0.1,
+                opacity: 0,
+                appearing: true
+            };
+
+            particles.push(powerup);
+
+            // Hacer que aparezca gradualmente
+            setTimeout(() => {
+                if (powerup.appearing) {
+                    powerup.appearing = false;
+                    powerup.scale = 1;
+                    powerup.opacity = 1;
+                }
+            }, 300);
+
+            // Programar el siguiente power-up con intervalo más largo
+            if (gameState.current === 'playing') {
+                setTimeout(createRandomPowerup, GAME_CONFIG.powerupSpawnInterval + Math.random() * 4000); // 8-12 segundos
+            }
+        }
+
+        function restartPowerupSystem() {
+            // Limpiar cualquier power-up existente
+            particles = particles.filter(p => p.type !== 'powerup');
+
+            // Reiniciar contador
+            gameState.powerupsCollected = 0;
+
+            // Programar el primer power-up para después del 6to tubo (más tarde)
+            setTimeout(() => {
+                if (gameState.current === 'playing') {
+                    createRandomPowerup();
+                }
+            }, 18000); // 18 segundos después de reiniciar (más escaso)
+        }
+
+                function clearAllPipes() {
+            // Limpiar todos los tubos de la pantalla
+            const pipesRemoved = pipes.length;
+            pipes = [];
+
+            // Ganar puntos por cada tubo destruido
+            const pointsEarned = pipesRemoved * 2; // 2 puntos por tubo
+            gameState.score += pointsEarned;
+            gameState.combo += pipesRemoved;
+
+            // Mostrar mensaje de puntos ganados
+            showPointsEarned(pointsEarned, pipesRemoved);
+
+            // Crear nuevos tubos más adelante para mantener el juego fluido
+            setTimeout(() => {
+                if (gameState.current === 'playing') {
+                    createPipe(canvas.width + 100);
+                    createPipe(canvas.width + 400);
+                }
+            }, 1000);
+
+            // Efecto visual de limpieza
+            createScreenClearEffect();
+
+            // Actualizar UI
+            updateUI();
+        }
+
+        function showShieldMessage() {
+            // Crear mensaje temporal de escudo activo - Posicionado arriba izquierda
+            const shieldMsg = document.createElement('div');
+            shieldMsg.style.cssText = `
+                position: absolute;
+                top: 80px;
+                left: 20px;
+                background: linear-gradient(135deg, #40E0D0, #00CED1);
+                color: white;
+                padding: 10px 16px;
+                border-radius: 18px;
+                font-weight: 700;
+                font-size: 14px;
+                box-shadow: 0 3px 15px rgba(64, 224, 208, 0.4);
+                z-index: 50;
+                animation: shieldActivated 1s ease-out;
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            `;
+            shieldMsg.innerHTML = '🛡️ Escudo Activado';
+
+            document.querySelector('.game-container').appendChild(shieldMsg);
+
+            // Remover después de 1.5 segundos
+            setTimeout(() => {
+                if (shieldMsg.parentNode) {
+                    shieldMsg.remove();
+                }
+            }, 1500);
+        }
+
+                function createScreenClearEffect() {
+            // Crear mensaje épico de limpieza de pantalla - Posicionado arriba
+            const clearMsg = document.createElement('div');
+            clearMsg.style.cssText = `
+                position: absolute;
+                top: 120px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 20px;
+                font-weight: 800;
+                font-size: 16px;
+                box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+                z-index: 50;
+                animation: screenClearEffect 1.2s ease-out;
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            `;
+            clearMsg.innerHTML = '🛡️ ¡PANTALLA LIMPIA! 🛡️';
+
+            document.querySelector('.game-container').appendChild(clearMsg);
+
+            // Remover después de 2 segundos
+            setTimeout(() => {
+                if (clearMsg.parentNode) {
+                    clearMsg.remove();
+                }
+            }, 2000);
+        }
+
+        function showPointsEarned(points, pipesDestroyed) {
+            // Mostrar puntos ganados por destruir tubos - Posicionado arriba derecha
+            const pointsMsg = document.createElement('div');
+            pointsMsg.style.cssText = `
+                position: absolute;
+                top: 80px;
+                right: 20px;
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                color: white;
+                padding: 10px 16px;
+                border-radius: 18px;
+                font-weight: 700;
+                font-size: 14px;
+                box-shadow: 0 3px 15px rgba(255, 215, 0, 0.4);
+                z-index: 50;
+                animation: pointsEarnedEffect 1.5s ease-out;
+                backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                max-width: 200px;
+                text-align: center;
+            `;
+            pointsMsg.innerHTML = `+${points} pts<br><span style="font-size: 12px;">${pipesDestroyed} tubos</span> 🎯`;
+
+            document.querySelector('.game-container').appendChild(pointsMsg);
+
+            // Remover después de 1.5 segundos
+            setTimeout(() => {
+                if (pointsMsg.parentNode) {
+                    pointsMsg.remove();
+                }
+            }, 1500);
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+
+            const comboIndicator = document.getElementById('comboIndicator');
+            if (gameState.combo > 0) {
+                comboIndicator.classList.add('active');
+                document.getElementById('comboValue').textContent = gameState.combo;
+            } else {
+                comboIndicator.classList.remove('active');
+            }
+        }
+
+        function updatePowerupUI() {
+            const container = document.getElementById('powerupActive');
+            container.innerHTML = '';
+
+            if (heart.powerups.shield) {
+                const icon = document.createElement('div');
+                icon.className = 'powerup-icon';
+                icon.textContent = '🛡️';
+                icon.title = 'Escudo activo - Te protege de una colisión';
+                container.appendChild(icon);
+
+                // Agregar indicador visual de escudo activo
+                console.log('🛡️ Escudo visible en UI');
+            }
+
+            if (heart.powerups.slowmo) {
+                const icon = document.createElement('div');
+                icon.className = 'powerup-icon';
+                icon.textContent = '⏱️';
+                icon.title = 'Cámara lenta activa';
+                container.appendChild(icon);
+            }
+        }
+
+
+
+        // ===== RENDER =====
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#ffe6f2');
+            gradient.addColorStop(1, '#fff0f7');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawClouds();
+            drawPipes();
+            drawParticles();
+            drawHeart();
+
+            if (heart.powerups.slowmo) {
+                ctx.fillStyle = 'rgba(100, 100, 255, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function drawClouds() {
+            ctx.save();
+            for (const cloud of clouds) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${cloud.opacity})`;
+                ctx.beginPath();
+                ctx.arc(cloud.x, cloud.y, cloud.height / 2, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width * 0.25, cloud.y, cloud.height * 0.6, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width * 0.5, cloud.y, cloud.height * 0.5, 0, Math.PI * 2);
+                ctx.arc(cloud.x + cloud.width * 0.75, cloud.y, cloud.height * 0.45, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawPipes() {
+            for (const pipe of pipes) {
+                const gradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + GAME_CONFIG.pipeWidth, 0);
+                gradient.addColorStop(0, '#ff69b4');
+                gradient.addColorStop(0.5, '#ff1493');
+                gradient.addColorStop(1, '#c71585');
+
+                ctx.fillStyle = gradient;
+
+                // Tubo superior
+                ctx.fillRect(pipe.x, 0, GAME_CONFIG.pipeWidth, pipe.topHeight);
+                ctx.fillStyle = '#ffb6c1';
+                ctx.fillRect(pipe.x - 5, pipe.topHeight - 30, GAME_CONFIG.pipeWidth + 10, 30);
+
+                // Tubo inferior
+                ctx.fillStyle = gradient;
+                ctx.fillRect(pipe.x, pipe.bottomY, GAME_CONFIG.pipeWidth, canvas.height - pipe.bottomY);
+                ctx.fillStyle = '#ffb6c1';
+                ctx.fillRect(pipe.x - 5, pipe.bottomY, GAME_CONFIG.pipeWidth + 10, 30);
+
+                // Decoración
+                ctx.save();
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('💕', pipe.x + GAME_CONFIG.pipeWidth / 2, pipe.topHeight - 5);
+                ctx.fillText('💕', pipe.x + GAME_CONFIG.pipeWidth / 2, pipe.bottomY + 25);
+                ctx.restore();
+
+
+            }
+        }
+
+        function drawHeart() {
+            ctx.save();
+            ctx.translate(heart.x + GAME_CONFIG.heartSize / 2, heart.y + GAME_CONFIG.heartSize / 2);
+            ctx.rotate(heart.rotation);
+
+            if (heart.powerups.shield) {
+                // Escudo épico que limpia la pantalla
+                ctx.beginPath();
+                ctx.arc(0, 0, GAME_CONFIG.heartSize * 1.2, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(64, 224, 208, 0.9)';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Brillo adicional del escudo
+                ctx.shadowColor = '#40E0D0';
+                ctx.shadowBlur = 25;
+            }
+
+            ctx.shadowColor = '#ff69b4';
+            ctx.shadowBlur = 15;
+
+            ctx.font = `${GAME_CONFIG.heartSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('❤️', 0, 0);
+
+            ctx.restore();
+        }
+
+        function drawParticles() {
+            for (const p of particles) {
+                if (p.type === 'powerup') {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+
+                    // Escala y opacidad para power-ups
+                    const scale = p.scale || 1;
+                    const opacity = p.opacity || 1;
+                    ctx.scale(scale, scale);
+                    ctx.globalAlpha = opacity;
+
+                    // Círculo de fondo más grande y brillante
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
+                    ctx.fill();
+
+                    // Borde más grueso con color según el tipo
+                    const borderColor = p.powerupType === 'shield' ? '#40E0D0' : '#FFD700';
+                    ctx.strokeStyle = borderColor;
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    // Brillo adicional más intenso
+                    ctx.shadowColor = borderColor;
+                    ctx.shadowBlur = 20;
+
+                    // Emoji del power-up más grande
+                    ctx.font = '28px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.emoji, 0, 0);
+
+
+
+                    // Restaurar sombra y opacidad
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 1;
+
+                    ctx.restore();
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation || 0);
+
+                    // Efecto especial para partículas de power-up
+                    if (p.powerupColor) {
+                        ctx.shadowColor = p.powerupColor;
+                        ctx.shadowBlur = 10;
+                    }
+
+                    ctx.font = `${p.size}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.emoji, 0, 0);
+
+                    ctx.restore();
+                }
+            }
+        }
+
+        // ===== GAME LOOP =====
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ===== INICIAR JUEGO =====
+
+        window.addEventListener('load', init);
+
+        // Prevenir zoom en iOS
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
