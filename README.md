@@ -1,6 +1,6 @@
-# 💖 Juego de Valentina - Te Amo 💖
+# 💖 Juego 
 
-Un juego de flappy bird personalizado y romántico creado especialmente para Valentina.
+Un juego de flappy bird personalizado y romántico.
 
 ## 🎮 **Características del Juego:**
 
@@ -25,7 +25,6 @@ Un juego de flappy bird personalizado y romántico creado especialmente para Val
 
 Este juego fue creado con mucho amor y dedicación. Cada mensaje, cada animación y cada detalle fue pensado para hacerte sonreír mientras juegas.
 
-**¡Te amo con todo mi corazón! 💖**
 
 ---
 
